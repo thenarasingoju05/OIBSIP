@@ -3,17 +3,8 @@ import time
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
-
-# -----------------------------------
-# CONFIGURATION
-# -----------------------------------
-# Prefer environment variable for API key; fall back to hardcoded if set.
 API_KEY = os.getenv("OPENWEATHER_API_KEY", "5a6344ba06fc8ab6b1d0297088c27ede")
 BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
-
-# Optional proxy support via environment variables `HTTP_PROXY` / `HTTPS_PROXY`
-
-
 def _session_with_retries(retries=3, backoff_factor=0.5, status_forcelist=(500, 502, 503, 504)):
     session = requests.Session()
     retry = Retry(
@@ -38,9 +29,6 @@ def get_weather(city):
     params = {"q": city, "appid": API_KEY, "units": "metric"}
 
     session = _session_with_retries()
-
-    # Apply explicit proxy configuration if provided via environment variables.
-    # Supports HTTP_PROXY, HTTPS_PROXY, lower-case variants, or a generic PROXY_URL.
     http_proxy = os.getenv("HTTP_PROXY") or os.getenv("http_proxy")
     https_proxy = os.getenv("HTTPS_PROXY") or os.getenv("https_proxy")
     generic_proxy = os.getenv("PROXY_URL") or os.getenv("proxy_url")
@@ -75,15 +63,14 @@ def get_weather(city):
         print("Status:", response.status_code)
         print("Body:", response.text)
         return
-
-    # Safely extract fields
+        
     temperature = data.get("main", {}).get("temp")
     humidity = data.get("main", {}).get("humidity")
     weather = None
     if isinstance(data.get("weather"), list) and data["weather"]:
         weather = data["weather"][0].get("description")
 
-    # Display output
+    
     print("\n🌍 Weather Report")
     print("---------------------")
     print(f"City        : {city}")
@@ -91,9 +78,7 @@ def get_weather(city):
     print(f"Humidity    : {humidity} %")
     print(f"Condition   : {weather.capitalize() if weather else 'N/A'}")
 
-# -----------------------------------
-# MAIN PROGRAM
-# -----------------------------------
 if __name__ == "__main__":
     city_name = input("Enter city name: ")
     get_weather(city_name)
+

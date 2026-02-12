@@ -3,7 +3,7 @@ import time
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
-API_KEY = os.getenv("OPENWEATHER_API_KEY", "5a6344ba06fc8ab6b1d0297088c27ede")
+API_KEY = os.getenv("OPENWEATHER_API_KEY", "API_KEY")
 BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
 def _session_with_retries(retries=3, backoff_factor=0.5, status_forcelist=(500, 502, 503, 504)):
     session = requests.Session()
@@ -23,7 +23,7 @@ def _session_with_retries(retries=3, backoff_factor=0.5, status_forcelist=(500, 
 
 def get_weather(city):
     if not API_KEY or API_KEY == "YOUR_API_KEY_HERE":
-        print("❌ Please set your OpenWeatherMap API key in the OPENWEATHER_API_KEY env var.")
+        print(" Please set your OpenWeatherMap API key in the OPENWEATHER_API_KEY env var.")
         return
 
     params = {"q": city, "appid": API_KEY, "units": "metric"}
@@ -48,18 +48,18 @@ def get_weather(city):
     try:
         response = session.get(BASE_URL, params=params, timeout=10)
     except requests.RequestException as e:
-        print("❌ Network error:", e)
+        print(" Network error:", e)
         return
 
     if not response.ok:
-        print(f"❌ API returned status {response.status_code}")
+        print(f" API returned status {response.status_code}")
         print("Response body:", response.text)
         return
 
     try:
         data = response.json()
     except ValueError:
-        print("❌ Failed to parse JSON from API response.")
+        print(" Failed to parse JSON from API response.")
         print("Status:", response.status_code)
         print("Body:", response.text)
         return
@@ -71,7 +71,7 @@ def get_weather(city):
         weather = data["weather"][0].get("description")
 
     
-    print("\n🌍 Weather Report")
+    print("\n Weather Report")
     print("---------------------")
     print(f"City        : {city}")
     print(f"Temperature : {temperature} °C")
@@ -81,4 +81,5 @@ def get_weather(city):
 if __name__ == "__main__":
     city_name = input("Enter city name: ")
     get_weather(city_name)
+
 
